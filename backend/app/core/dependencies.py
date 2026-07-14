@@ -1,5 +1,3 @@
-from typing import Generator
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
@@ -30,6 +28,12 @@ def get_current_user(
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    
+    if user.status != "Active":
+        raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Account is inactive",
+    )
 
     return user
 

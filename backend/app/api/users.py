@@ -10,16 +10,20 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/me")
 def get_current_user_profile(current_user: User = Depends(get_current_user)):
-    return {
-        "id": current_user.id,
-        "name": current_user.name,
-        "email": current_user.email,
-        "role": current_user.role,
-        "company_id": current_user.company_id,
-        "status": current_user.status,
-    }
-
+   return {
+    "id": current_user.id,
+    "name": current_user.name,
+    "email": current_user.email,
+    "role": current_user.role,
+    "company": current_user.company.name if current_user.company else None,
+    "last_login": current_user.last_login,
+    "status": current_user.status,
+}
 
 @router.get("/", dependencies=[Depends(require_role("Super Admin", "Company Admin"))])
-def list_users(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def list_users(
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+    ):
+    
     return db.query(User).filter(User.company_id == current_user.company_id).all()

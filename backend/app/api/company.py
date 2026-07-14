@@ -10,11 +10,29 @@ router = APIRouter(prefix="/companies", tags=["companies"])
 
 
 @router.get("/me")
-def get_company(current_user: User = Depends(get_current_user)):
-    company = current_user.company_id
-    return {"company_id": company}
+def get_company(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    company = (
+        db.query(Company)
+        .filter(Company.id == current_user.company_id)
+        .first()
+    )
+
+    return company
 
 
-@router.get("/", dependencies=[Depends(require_role("Super Admin", "Company Admin"))])
-def list_companies(db: Session = Depends(get_db)):
-    return db.query(Company).all()
+@router.get("/")
+def list_companies(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role == "Super Admin":
+        return db.query(Company).all()
+
+    return (
+        db.query(Company)
+        .filter(Company.id == current_user.company_id)
+        .all()
+    )
