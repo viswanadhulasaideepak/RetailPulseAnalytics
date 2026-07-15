@@ -5,6 +5,11 @@ from sqlalchemy.exc import OperationalError
 from app.api.auth import router as auth_router
 from app.api.company import router as company_router
 from app.api.users import router as users_router
+from app.api.products import router as products_router
+from app.api.sales import router as sales_router
+from app.api.inventory import router as inventory_router
+from app.api.reports import router as reports_router
+from app.api.analytics import router as analytics_router
 from app.core.config import settings
 from app.database.base import Base
 from app.database.database import engine
@@ -37,9 +42,21 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(company_router)
 app.include_router(users_router)
+app.include_router(products_router)
+app.include_router(sales_router)
+app.include_router(inventory_router)
+app.include_router(reports_router)
+app.include_router(analytics_router)
 
 
 
 @app.get("/")
 def home():
     return {"status": "success", "message": "RetailPulse Analytics Backend Running"}
+
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy",
+        "database": "connected"
+    }

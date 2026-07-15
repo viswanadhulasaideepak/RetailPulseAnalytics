@@ -1,89 +1,91 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { useAuth } from '../../context/AuthContext'
-import { ROUTES } from '../../constants/routes'
+import { Alert, Box, Typography } from "@mui/material";
 
-type LoginFormValues = {
-  email: string
-  password: string
-}
+import AuthLayout from "../../layouts/AuthLayout";
+import InputField from "../../components/common/InputField";
+import PasswordField from "../../components/common/PasswordField";
+import SubmitButton from "../../components/common/SubmitButton";
 
-export default function LoginPage() {
-  const navigate = useNavigate()
-  const { login, loading } = useAuth()
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormValues>()
+import { useAuth } from "../../context/AuthContext";
 
-  const [authError, setAuthError] = useState<string | null>(null)
+const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const onSubmit = async (values: LoginFormValues) => {
-    setAuthError(null)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setLoading(true);
+    setError("");
 
     try {
-      await login(values.email, values.password)
-      navigate(ROUTES.dashboard)
-    } catch (error: any) {
-      setAuthError(error.response?.data?.detail || 'Login failed. Please check your email and password.')
-      console.error(error)
+      await login(form);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err?.response?.data?.detail || "Login failed");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-2xl shadow-slate-200/60 backdrop-blur">
-        <div className="mb-8 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-500">RetailPulse</p>
-          <h1 className="mt-3 text-3xl font-semibold text-slate-900">Sign in to your workspace</h1>
-          <p className="mt-2 text-sm text-slate-500">Access dashboards, reports, and company insights.</p>
-        </div>
+    <AuthLayout>
+      <Typography variant="h4" sx={{ fontWeight: 700, textAlign: "center" }}>
+        Welcome Back
+      </Typography>
 
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Admin Email</label>
-            <input
-              type="email"
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none ring-0 transition focus:border-indigo-500"
-              placeholder="admin@company.com"
-              {...register('email', { required: 'Email is required' })}
-            />
-            <p className="text-xs text-slate-400">Use the admin/owner email for login.</p>
-            {errors.email && <p className="mt-1 text-sm text-rose-500">{errors.email.message}</p>}
-          </div>
+      <Typography color="text.secondary" sx={{ textAlign: "center", mb: 4 }}>
+        Login to RetailPulse Analytics
+      </Typography>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
-            <input
-              type="password"
-              className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-indigo-500"
-              placeholder="Enter your password"
-              {...register('password', { required: 'Password is required' })}
-            />
-            {errors.password && <p className="mt-1 text-sm text-rose-500">{errors.password.message}</p>}
-          </div>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-          {authError && <p className="text-center text-sm text-rose-500">{authError}</p>}
+      <Box component="form" onSubmit={handleSubmit}>
+        <InputField
+          label="Email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          type="email"
+          name="email"
+        />
 
-          <button
-            type="submit"
-            className="w-full rounded-2xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700"
-            disabled={loading}
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
+        <PasswordField
+          label="Password"
+          value={form.password}
+          onChange={handleChange}
+          name="password"
+        />
 
-        <p className="mt-6 text-center text-sm text-slate-500">
-          New here?{' '}
-          <Link className="font-semibold text-indigo-600 hover:text-indigo-700" to={ROUTES.register}>
-            Create your company
-          </Link>
-        </p>
-      </div>
-    </div>
-  )
-}
+        <SubmitButton text="Login" loading={loading} />
+      </Box>
+
+      <Typography sx={{ textAlign: "center", mt: 3 }}>
+        Don't have an account? <Link to="/register">Register</Link>
+      </Typography>
+    </AuthLayout>
+  );
+};
+
+export default Login;

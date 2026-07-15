@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_role
 from app.database.session import get_db
 from app.models.user import User
+from app.core.permissions import apply_company_scope
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -26,4 +27,7 @@ def list_users(
     current_user: User = Depends(get_current_user)
     ):
     
-    return db.query(User).filter(User.company_id == current_user.company_id).all()
+    query = db.query(User)
+    if current_user.role != "Super Admin":
+        query = apply_company_scope(query, current_user.company_id)
+    return query.all()

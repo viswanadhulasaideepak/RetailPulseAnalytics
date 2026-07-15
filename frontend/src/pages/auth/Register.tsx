@@ -1,117 +1,179 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { useAuth } from '../../context/AuthContext'
-import { ROUTES } from '../../constants/routes'
+import { Alert, Box, Grid, Typography } from "@mui/material";
 
-type RegisterFormValues = {
-  company_name: string
-  industry: string
-  company_email: string
-  company_address: string
-  company_phone: string
-  owner_name: string
-  owner_email: string
-  password: string
-  confirm_password: string
-}
+import AuthLayout from "../../layouts/AuthLayout";
+import InputField from "../../components/common/InputField";
+import PasswordField from "../../components/common/PasswordField";
+import SubmitButton from "../../components/common/SubmitButton";
 
-export default function RegisterPage() {
-  const navigate = useNavigate()
-  const { register: registerUser, loading } = useAuth()
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<RegisterFormValues>()
+import { registerCompany } from "../../api/authApi";
 
-  const password = watch('password')
+const Register = () => {
+  const navigate = useNavigate();
 
-  const onSubmit = async (values: RegisterFormValues) => {
-    try {
-      await registerUser(values)
-      navigate(ROUTES.dashboard)
-    } catch (error) {
-      console.error(error)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [form, setForm] = useState({
+    company_name: "",
+    industry: "",
+    company_email: "",
+    company_address: "",
+    company_phone: "",
+    owner_name: "",
+    owner_email: "",
+    password: "",
+    confirm_password: "",
+  });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setError("");
+
+    if (form.password !== form.confirm_password) {
+      setError("Passwords do not match.");
+      return;
     }
-  }
+
+    setLoading(true);
+
+    try {
+      await registerCompany(form);
+      navigate("/");
+    } catch (err: any) {
+      setError(err?.response?.data?.detail || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen px-4 py-10">
-      <div className="mx-auto max-w-5xl rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-2xl shadow-slate-200/60 backdrop-blur">
-        <div className="mb-8 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-500">RetailPulse</p>
-          <h1 className="mt-3 text-3xl font-semibold text-slate-900">Start your company workspace</h1>
-          <p className="mt-2 text-sm text-slate-500">Register your company and create the first admin account.</p>
-        </div>
+    <AuthLayout>
+      <Typography variant="h4" sx={{ fontWeight: 700, textAlign: "center" }}>
+        Company Registration
+      </Typography>
 
-        <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Company Name</label>
-            <input className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('company_name', { required: 'Company name is required' })} />
-            {errors.company_name && <p className="mt-1 text-sm text-rose-500">{errors.company_name.message}</p>}
-          </div>
+      <Typography color="text.secondary" sx={{ textAlign: "center", mb: 4 }}>
+        Create your RetailPulse workspace
+      </Typography>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Industry</label>
-            <input className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('industry', { required: 'Industry is required' })} />
-            {errors.industry && <p className="mt-1 text-sm text-rose-500">{errors.industry.message}</p>}
-          </div>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Company Email</label>
-            <input type="email" className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('company_email', { required: 'Company email is required' })} />
-            {errors.company_email && <p className="mt-1 text-sm text-rose-500">{errors.company_email.message}</p>}
-          </div>
+      <Box component="form" onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12 }}>
+            <InputField
+              name="company_name"
+              label="Company Name"
+              value={form.company_name}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Company Phone</label>
-            <input className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('company_phone', { required: 'Phone is required' })} />
-            {errors.company_phone && <p className="mt-1 text-sm text-rose-500">{errors.company_phone.message}</p>}
-          </div>
+          <Grid size={{ xs: 12 }}>
+            <InputField
+              name="industry"
+              label="Industry"
+              value={form.industry}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
 
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-slate-700">Company Address</label>
-            <input className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('company_address', { required: 'Address is required' })} />
-            {errors.company_address && <p className="mt-1 text-sm text-rose-500">{errors.company_address.message}</p>}
-          </div>
+          <Grid size={{ xs: 12 }}>
+            <InputField
+              name="company_email"
+              label="Company Email"
+              value={form.company_email}
+              onChange={handleChange}
+              type="email"
+              required
+            />
+          </Grid>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Owner Name</label>
-            <input className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('owner_name', { required: 'Owner name is required' })} />
-            {errors.owner_name && <p className="mt-1 text-sm text-rose-500">{errors.owner_name.message}</p>}
-          </div>
+          <Grid size={{ xs: 12 }}>
+            <InputField
+              name="company_address"
+              label="Company Address"
+              value={form.company_address}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Owner Email</label>
-            <input type="email" className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('owner_email', { required: 'Owner email is required' })} />
-            {errors.owner_email && <p className="mt-1 text-sm text-rose-500">{errors.owner_email.message}</p>}
-          </div>
+          <Grid size={{ xs: 12 }}>
+            <InputField
+              name="company_phone"
+              label="Company Phone"
+              value={form.company_phone}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
-            <input type="password" className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('password', { required: 'Password is required', minLength: { value: 8, message: 'Minimum 8 characters' } })} />
-            {errors.password && <p className="mt-1 text-sm text-rose-500">{errors.password.message}</p>}
-          </div>
+          <Grid size={{ xs: 12 }}>
+            <InputField
+              name="owner_name"
+              label="Company Admin Name"
+              value={form.owner_name}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Confirm Password</label>
-            <input type="password" className="w-full rounded-2xl border border-slate-200 px-4 py-3" {...register('confirm_password', { required: 'Confirm your password', validate: value => value === password || 'Passwords do not match' })} />
-            {errors.confirm_password && <p className="mt-1 text-sm text-rose-500">{errors.confirm_password.message}</p>}
-          </div>
+          <Grid size={{ xs: 12 }}>
+            <InputField
+              name="owner_email"
+              label="Company Admin Email"
+              value={form.owner_email}
+              onChange={handleChange}
+              type="email"
+              required
+            />
+          </Grid>
 
-          <div className="md:col-span-2 flex flex-col gap-3">
-            <button type="submit" className="rounded-2xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700" disabled={loading}>
-              {loading ? 'Creating workspace...' : 'Create company'}
-            </button>
-            <p className="text-center text-sm text-slate-500">
-              Already registered?{' '}
-              <Link className="font-semibold text-indigo-600 hover:text-indigo-700" to={ROUTES.login}>Sign in</Link>
-            </p>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
-}
+          <Grid size={{ xs: 12 }}>
+            <PasswordField
+              name="password"
+              label="Password"
+              value={form.password}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12 }}>
+            <PasswordField
+              name="confirm_password"
+              label="Confirm Password"
+              value={form.confirm_password}
+              onChange={handleChange}
+            />
+          </Grid>
+        </Grid>
+
+        <SubmitButton text="Register Company" loading={loading} />
+      </Box>
+
+      <Typography sx={{ mt: 3, textAlign: "center" }}>
+        Already have an account? <Link to="/">Login</Link>
+      </Typography>
+    </AuthLayout>
+  );
+};
+
+export default Register;

@@ -5,6 +5,7 @@ from app.core.dependencies import get_current_user, require_role
 from app.database.session import get_db
 from app.models.company import Company
 from app.models.user import User
+from app.core.permissions import ensure_company_access
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 

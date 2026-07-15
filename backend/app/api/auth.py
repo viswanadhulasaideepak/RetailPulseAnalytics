@@ -170,6 +170,7 @@ def get_me(current_user: User = Depends(get_current_user)):
     "email": current_user.email,
     "role": current_user.role,
     "company_id": current_user.company_id,
+    "company_name": current_user.company.name,
     "status": current_user.status,
     "last_login": current_user.last_login,
 }
