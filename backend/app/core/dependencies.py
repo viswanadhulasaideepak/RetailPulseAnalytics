@@ -15,25 +15,29 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
 ) -> User:
+
+    print("========== AUTH DEBUG ==========")
+    print("Credentials:", credentials)
+
     token = credentials.credentials
+    print("Token:", token)
+
     try:
         payload = verify_token(token)
-    except JWTError as exc:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token") from exc
+        print("Payload:", payload)
 
-    email: str | None = payload.get("sub")
-    if email is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    except JWTError as exc:
+        print("JWT ERROR:", exc)
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token"
+        )
+
+    email = payload.get("sub")
+    print("Email:", email)
 
     user = db.query(User).filter(User.email == email).first()
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
-    
-    if user.status != "Active":
-        raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail="Account is inactive",
-    )
+    print("User:", user)
 
     return user
 

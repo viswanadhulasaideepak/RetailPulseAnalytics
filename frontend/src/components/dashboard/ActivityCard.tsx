@@ -9,12 +9,17 @@ import {
 
 const ActivityCard = () => {
   return (
-    <Card
-      sx={{
-        bgcolor: "#1E293B",
-        borderRadius: 4,
-      }}
-    >
+   <Card
+    sx={{
+        borderRadius: 3,
+        boxShadow: 2,
+        transition: "0.3s",
+        "&:hover": {
+            transform: "translateY(-3px)",
+            boxShadow: 5,
+        },
+    }}
+>
       <CardContent>
 
         <Typography variant="h6"

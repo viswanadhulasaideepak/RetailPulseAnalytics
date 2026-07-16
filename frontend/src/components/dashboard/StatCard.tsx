@@ -1,12 +1,9 @@
-import {
-  Card,
-  CardContent,
-  Typography,
-} from "@mui/material";
+import {Card, CardContent,Typography,} from "@mui/material";
+import type { ReactNode } from "react";
 
 interface Props {
   title: string;
-  value: string;
+  value: ReactNode;
 }
 
 const StatCard = ({
@@ -15,10 +12,16 @@ const StatCard = ({
 }: Props) => {
   return (
     <Card
-      sx={{
-        borderRadius: 4,
-        boxShadow: 3,
-      }}>
+    sx={{
+        borderRadius: 3,
+        boxShadow: 2,
+        transition: "0.3s",
+        "&:hover": {
+            transform: "translateY(-3px)",
+            boxShadow: 5,
+        },
+    }}
+>
       <CardContent>
 
         <Typography

@@ -1,33 +1,48 @@
-import { Box, Typography } from "@mui/material";
-import InboxRoundedIcon from "@mui/icons-material/InboxRounded";
+import {
+  Box,
+  Typography,
+} from "@mui/material";
+
+import Inventory2OutlinedIcon
+from "@mui/icons-material/Inventory2Outlined";
 
 interface Props {
-  message?: string;
+  title: string;
+  subtitle: string;
 }
 
 const EmptyState = ({
-  message = "No Data Found",
+  title,
+  subtitle,
 }: Props) => {
   return (
     <Box
       sx={{
-        py: 8,
         textAlign: "center",
+        py: 10,
       }}
     >
-      <InboxRoundedIcon
+      <Inventory2OutlinedIcon
         sx={{
-          fontSize: 60,
-          color: "#94A3B8",
+          fontSize: 70,
+          color: "#CBD5E1",
         }}
       />
 
       <Typography
-        sx={{ mt: 2 }}
-        color="text.secondary"
+        variant="h6"
+        sx={{
+          mt: 2,
+          fontWeight: 600,
+        }}
       >
-        {message}
+        {title}
       </Typography>
+
+      <Typography color="text.secondary">
+        {subtitle}
+      </Typography>
+
     </Box>
   );
 };
