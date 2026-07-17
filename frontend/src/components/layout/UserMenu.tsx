@@ -32,34 +32,31 @@ const UserMenu = () => {
         sx={{
           cursor: "pointer",
           bgcolor: "#6366F1",
-        }}
-      >
+        }}>
         {user?.name?.charAt(0).toUpperCase()}
       </Avatar>
 
       <Menu
         anchorEl={anchor}
         open={Boolean(anchor)}
-        onClose={() => setAnchor(null)}
-      >
+        onClose={() => setAnchor(null)}>
         <MenuItem disabled>
           <Typography sx={{ fontWeight: 700 }}>{user?.name}</Typography>
         </MenuItem>
 
         <MenuItem
-          onClick={() => navigate("/profile")}
-        >
+          onClick={() => navigate("/profile")}>
           Profile
         </MenuItem>
 
         <MenuItem
-          onClick={() => {
-            logout();
-            navigate("/");
-          }}
-        >
-          Logout
+        onClick={async () => {
+          await logout();
+          navigate("/");
+          }}>
+            Logout
         </MenuItem>
+    
       </Menu>
     </>
   );

@@ -14,6 +14,8 @@ import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+import HistoryIcon from "@mui/icons-material/History";
+import PointOfSaleRoundedIcon from "@mui/icons-material/PointOfSaleRounded";
 
 import Logo from "./Logo";
 import SidebarItem from "./SidebarItem";
@@ -48,50 +50,96 @@ const Sidebar = () => {
           icon={<DashboardRoundedIcon />}
         />
 
+        {[
+          "Company Admin",
+          "Super Admin",
+          "Analyst",
+        ].includes(user?.role ?? "") && (
+        <>
         <SidebarItem
-          title="Products"
-          path="/products"
-          icon={<InventoryRoundedIcon />}
+         title="Products"
+         path="/products"
+         icon={<InventoryRoundedIcon />}
         />
 
         <SidebarItem
-          title="Categories"
-          path="/categories"
-          icon={<CategoryRoundedIcon />}
+         title="Categories"
+         path="/categories"
+         icon={<CategoryRoundedIcon />}
         />
 
         <SidebarItem
-          title="Inventory"
-          path="/inventory"
-          icon={<ShoppingCartRoundedIcon />}
+         title="Sales"
+         path="/sales"
+         icon={<PointOfSaleRoundedIcon />}
         />
+        </>
+        )}
 
-        <SidebarItem
-          title="Analytics"
-          path="/analytics"
-          icon={<AnalyticsRoundedIcon />}
-        />
+        {[
+          "Company Admin",
+          "Super Admin",
+          "Analyst",
+        ].includes(user?.role ?? "") && (
+        
+          <SidebarItem
+           title="Inventory"
+           path="/inventory"
+           icon={<ShoppingCartRoundedIcon />}
+          />
+          )}
 
-        <SidebarItem
-          title="Reports"
-          path="/reports"
-          icon={<AssessmentRoundedIcon />}
-        />
+        {[
+          "Company Admin",
+          "Super Admin",
+          "Analyst",
+        ].includes(user?.role ?? "") && (
+          <SidebarItem
+             title="Analytics"
+             path="/analytics"
+             icon={<AnalyticsRoundedIcon />}
+          />
+          )}
 
-        {user?.role === "Company Admin" && (
+        {[
+          "Company Admin",
+          "Super Admin",
+          "Analyst",
+        ].includes(user?.role ?? "") && (
+          <SidebarItem
+             title="Reports"
+             path="/reports"
+             icon={<AssessmentRoundedIcon />}
+          />
+          )}
+
+        {[
+          "Company Admin",
+          "Super Admin",].includes(user?.role ?? "") && (
           <>
-            <SidebarItem
-              title="Users"
-              path="/users"
-              icon={<PeopleRoundedIcon />}
-            />
+          <SidebarItem
+             title="Users"
+             path="/users"
+             icon={<PeopleRoundedIcon />}
+          />
 
-            <SidebarItem
-              title="Company"
-              path="/company"
-              icon={<BusinessRoundedIcon />}
-            />
-          </>
+          <SidebarItem
+           title="Company"
+           path="/company"
+           icon={<BusinessRoundedIcon />}
+          />
+           </>
+        )}
+
+        {[
+          "Company Admin",
+          "Super Admin",
+        ].includes(user?.role ?? "") && (
+        <SidebarItem
+           title="Audit Logs"
+           path="/audit-logs"
+           icon={<HistoryIcon />}
+        />
         )}
 
         <SidebarItem

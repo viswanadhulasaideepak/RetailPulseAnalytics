@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 import {
   login as loginApi,
   getCurrentUser,
+  logoutUser,
 } from "../api/authApi";
 
 interface User {
@@ -33,7 +34,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   login: (data: LoginData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>(
@@ -102,13 +103,23 @@ export const AuthProvider = ({
     setUser(profile);
   };
 
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+  const logout = async () => {
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
 
-    setUser(null);
-    setToken(null);
-  };
+    if (refreshToken) {
+      await logoutUser(refreshToken);
+    }
+  } catch (error) {
+    console.error("Logout API failed:", error);
+  }
+
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+
+  setUser(null);
+  setToken(null);
+};
 
   return (
     <AuthContext.Provider

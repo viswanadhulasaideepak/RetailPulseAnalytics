@@ -11,10 +11,8 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import {
-  registerUser,
-  RegisterPayload,
-} from "../../api/authApi";
+import { registerCompany } from "../api/authApi";
+import type { RegisterPayload } from "../api/authApi";
 
 interface RegisterFormData extends RegisterPayload {}
 
@@ -33,7 +31,7 @@ const RegisterForm = () => {
   const password = watch("password");
 
   const mutation = useMutation({
-    mutationFn: registerUser,
+    mutationFn: registerCompany,
 
     onSuccess: () => {
       navigate("/");
@@ -86,8 +84,12 @@ const RegisterForm = () => {
         <TextField
           label="Company Email"
           {...register("company_email", {
-            required: "Required",
-          })}
+  required: "Company email is required",
+  pattern: {
+    value: /^\S+@\S+\.\S+$/,
+    message: "Enter a valid email",
+  },
+})}
           error={!!errors.company_email}
           helperText={errors.company_email?.message}
         />

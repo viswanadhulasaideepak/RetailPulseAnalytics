@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sqlalchemy.orm import Session
-
+from app.crud import audit_log as audit_crud
 from app.models.audit_log import AuditLog
 
 
@@ -25,3 +25,14 @@ def create_audit_log(
     db.commit()
     db.refresh(log_entry)
     return log_entry
+
+def get_audit_logs(
+    db: Session,
+    company_id: int,
+    search: str |None=None,
+):
+    return audit_crud.get_audit_logs(
+        db,
+        company_id,
+        search,
+    )

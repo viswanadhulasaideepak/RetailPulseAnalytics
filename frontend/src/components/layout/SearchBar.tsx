@@ -12,22 +12,16 @@ const SearchBar = () => {
         bgcolor: "#1E293B",
         borderRadius: 4,
         boxShadow: "none",
-      }}
-    >
-      <SearchRoundedIcon
-sx={{
-color:"#94A3B8"
-}}
-/>
+      }}>
+      <SearchRoundedIcon 
+      sx={{ color:"#94A3B8" }}/>
 
-      <InputBase
-        placeholder="Search..."
+      <InputBase placeholder="Search..."
         sx={{
-ml:1,
-flex:1,
-color:"white"
-}}
-      />
+          ml:1,
+          flex:1,
+          color:"white"
+        }}/>
     </Paper>
   );
 };

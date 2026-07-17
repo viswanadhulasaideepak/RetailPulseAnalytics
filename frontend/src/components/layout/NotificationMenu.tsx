@@ -6,8 +6,7 @@ const NotificationMenu = () => {
     <IconButton color="inherit">
       <Badge
         badgeContent={3}
-        color="error"
-      >
+        color="error">
         <NotificationsRoundedIcon />
       </Badge>
     </IconButton>

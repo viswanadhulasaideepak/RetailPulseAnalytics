@@ -11,8 +11,8 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { loginUser } from "../../api/authApi";
-import { useAuth } from "../../context/AuthContext";
+import { login as loginApi } from "../api/authApi";
+import { useAuth } from "../context/AuthContext";
 
 interface LoginInputs {
   email: string;
@@ -33,17 +33,15 @@ const LoginForm = () => {
   } = useForm<LoginInputs>();
 
   const mutation = useMutation({
-    mutationFn: loginUser,
+  mutationFn: loginApi,
 
-    onSuccess: async (data) => {
-      await login(
-        data.access_token,
-        data.refresh_token
-      );
-
+    onSuccess: async (_, variables) => {
+      await login(variables);
+      
       navigate("/dashboard");
     },
 
+    
     onError: () => {
       setError("Invalid Email or Password");
     },

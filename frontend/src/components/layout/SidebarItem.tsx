@@ -33,14 +33,12 @@ const SidebarItem = ({
         "&:hover": {
           background: "#1E293B",
         },
-      }}
-    >
+      }}>
       <ListItemIcon
         sx={{
           color: "inherit",
           minWidth: 40,
-        }}
-      >
+        }}>
         {icon}
       </ListItemIcon>
 
@@ -51,8 +49,7 @@ const SidebarItem = ({
             fontSize: 15,
             fontWeight: 500,
           },
-        }}
-      />
+        }}/>
     </ListItemButton>
   );
 };

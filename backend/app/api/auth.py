@@ -144,23 +144,7 @@ def refresh_token(
         "refresh_token": new_refresh,
         "token_type": "bearer",
     }    
-    
-#-----------------------Logout------------------------    
-@router.post("/logout")
-def logout(
-    payload: LogoutRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    logout_user(
-        db=db,
-        user=current_user,
-        refresh_token=payload.refresh_token,
-    )
-
-    return {
-        "message": "Logged out successfully"
-    }    
+        
 
 @router.get("/me", response_model=UserProfile)
 def get_me(current_user: User = Depends(get_current_user)):
@@ -206,4 +190,29 @@ def update_password(
 
     return {
         "message": "Password changed successfully"
+    }    
+    
+#-------------------Logout--------------------
+    
+@router.post("/logout")
+def logout(
+    payload: LogoutRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    logout_user(
+        db=db,
+        user=current_user,
+        refresh_token=payload.refresh_token,
+    )
+
+    create_audit_log(
+        db=db,
+        company_id=current_user.company_id,
+        user_id=current_user.id,
+        action="User Logout",
+    )
+
+    return {
+        "message": "Logged out successfully"
     }    

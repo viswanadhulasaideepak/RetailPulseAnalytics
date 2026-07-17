@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import OperationalError
-
+from app.api.audit_logs import router as audit_router
 from app.api.auth import router as auth_router
 from app.api.company import router as company_router
 from app.api.users import router as users_router
@@ -50,6 +50,7 @@ app.include_router(inventory_router)
 app.include_router(reports_router)
 app.include_router(analytics_router)
 app.include_router(categories_router)
+app.include_router(audit_router)
 
 @app.get("/")
 def home():
