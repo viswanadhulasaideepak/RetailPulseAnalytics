@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy.orm import Session
 from app.crud import audit_log as audit_crud
 from app.models.audit_log import AuditLog
@@ -8,16 +6,20 @@ from app.models.audit_log import AuditLog
 def create_audit_log(
     db: Session,
     *,
-    company_id: Optional[int],
-    user_id: Optional[int],
+    company_id: int,
+    user_id: int,
     action: str,
-    ip_address: Optional[str] = None,
-    browser: Optional[str] = None,
-) -> AuditLog:
+    invoice_number: str | None = None,
+    product_name: str | None = None,
+    ip_address: str | None = None,
+    browser: str | None = None,
+):
     log_entry = AuditLog(
         company_id=company_id,
         user_id=user_id,
         action=action,
+        invoice_number=invoice_number,
+        product_name=product_name,
         ip_address=ip_address,
         browser=browser,
     )

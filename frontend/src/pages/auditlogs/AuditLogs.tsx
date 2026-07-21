@@ -5,24 +5,14 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { getAuditLogs } from "../../api/auditApi";
 import type { AuditLog } from "../../types/audit";
 
-import {
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Stack,
-  Chip,
-  Box,
-} from "@mui/material";
+import {Card,CardContent,Typography,TextField,Table,TableHead,TableRow,TableCell,
+  TableBody,Stack,Chip,Box,TablePagination,} from "@mui/material";
 
 const AuditLogs = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const loadLogs = async () => {
     try {
@@ -36,6 +26,23 @@ const AuditLogs = () => {
   useEffect(() => {
     loadLogs();
   }, [search]);
+
+  const handleChangePage = (
+  _: unknown,
+  newPage: number
+) => {
+  setPage(newPage);
+};
+
+const handleChangeRowsPerPage = (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  setRowsPerPage(
+    parseInt(event.target.value, 10)
+  );
+
+  setPage(0);
+};
 
   return (
     <DashboardLayout>
@@ -78,7 +85,10 @@ const AuditLogs = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                logs.map((log) => (
+                logs.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                ).map((log) => (
                   <TableRow key={log.id} hover>
                     <TableCell>
                       <Box>
@@ -116,6 +126,14 @@ const AuditLogs = () => {
               )}
             </TableBody>
           </Table>
+          <TablePagination
+           component="div"
+           count={logs.length}
+           page={page}
+           onPageChange={handleChangePage}
+           rowsPerPage={rowsPerPage}
+           onRowsPerPageChange={handleChangeRowsPerPage}
+           rowsPerPageOptions={[5, 10, 25, 50]}/>
         </CardContent>
       </Card>
     </DashboardLayout>

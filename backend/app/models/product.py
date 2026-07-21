@@ -34,10 +34,10 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     company_id = Column( Integer,ForeignKey("companies.id", ondelete="CASCADE"),
-        nullable=False,index=True,)
+        nullable=False,index=True)
 
     category_id = Column(Integer,ForeignKey("categories.id", ondelete="CASCADE"),
-        nullable=False,)
+        nullable=False)
 
     name = Column(String(150), nullable=False)
     sku = Column(String(50), nullable=False)
@@ -51,4 +51,5 @@ class Product(Base):
     created_at = Column(DateTime(timezone=True),server_default=func.now(),)
     updated_at = Column(DateTime(timezone=True),server_default=func.now(),onupdate=func.now())
     category = relationship("Category",back_populates="products",lazy="joined")
-    company = relationship("Company",back_populates="products",)
+    company = relationship("Company",back_populates="products")
+    sale_items = relationship("SaleItem",back_populates="product",cascade="all, delete-orphan")

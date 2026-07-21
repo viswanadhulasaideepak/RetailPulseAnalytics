@@ -12,7 +12,8 @@ from app.api.reports import router as reports_router
 from app.api.analytics import router as analytics_router
 from app.api.categories import router as categories_router
 from app.core.config import settings
-import app.models
+from app.api import sales
+from app.api import notifications
 from app.database.base import Base
 from app.database.database import engine
 
@@ -51,6 +52,8 @@ app.include_router(reports_router)
 app.include_router(analytics_router)
 app.include_router(categories_router)
 app.include_router(audit_router)
+app.include_router(sales.router)
+app.include_router(notifications.router)
 
 @app.get("/")
 def home():

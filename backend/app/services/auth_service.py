@@ -159,18 +159,9 @@ def logout_user(
     if token:
         db.delete(token)
 
-    create_audit_log(
-        db=db,
-        company_id=user.company_id,
-        user_id=user.id,
-        action="User Logout",
-    )
-
     db.commit()
         
-# ==========================================================
-# VERIFY REFRESH TOKEN
-# ==========================================================
+#----------------- VERIFY REFRESH TOKEN-------------------
 
 def verify_refresh_token(
     db: Session,
@@ -211,10 +202,7 @@ def verify_refresh_token(
 
     return user
 
-
-# ==========================================================
-# CHANGE PASSWORD
-# ==========================================================
+# --------------------CHANGE PASSWORD-----------------------
 
 def change_password(
     db: Session,
@@ -225,12 +213,6 @@ def change_password(
     user.password_hash = hash_password(new_password)
 
     db.commit()
-    create_audit_log(
-    db=db,
-    company_id=user.company_id,
-    user_id=user.id,
-    action="Password Changed",
-)
     db.refresh(user)
 
     return user

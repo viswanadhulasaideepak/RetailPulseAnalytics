@@ -1,54 +1,30 @@
-from app.database.session import SessionLocal
-from app.models.user import User
-from app.core.security import hash_password
+import sqlite3
 
-db = SessionLocal()
+DB_PATH = "retailpulse.db"   # Change this if your database has a different name
 
-COMPANY_ID = 1      
+conn = sqlite3.connect(DB_PATH)
+cursor = conn.cursor()
 
-users = [
-    {
-        "name": "System Admin",
-        "email": "superadmin@retailpulse.com",
-        "role": "Super Admin",
-    },
-    {
-        "name": "Ramesh Kumar",
-        "email": "analyst@nexusretail.com",
-        "role": "Analyst",
-    },
-    {
-        "name": "Priya Reddy",
-        "email": "viewer@nexusretail.com",
-        "role": "Viewer",
-    },
+columns = [
+    ("invoice_number", "TEXT"),
+    ("product_name", "TEXT"),
+    ("ip_address", "TEXT"),
+    ("browser", "TEXT"),
 ]
 
-for u in users:
-
-    exists = (
-        db.query(User)
-        .filter(User.email == u["email"])
-        .first()
-    )
-
-    if exists:
-        print(f"{u['role']} already exists")
-        continue
-
-    db.add(
-        User(
-            company_id=COMPANY_ID,
-            name=u["name"],
-            email=u["email"],
-            password_hash=hash_password("Password@123"),
-            role=u["role"],
-            status="Active",
+for column_name, column_type in columns:
+    try:
+        cursor.execute(
+            f"ALTER TABLE audit_logs ADD COLUMN {column_name} {column_type}"
         )
-    )
+        print(f"Added column: {column_name}")
+    except sqlite3.OperationalError as e:
+        if "duplicate column name" in str(e):
+            print(f"{column_name} already exists.")
+        else:
+            print(e)
 
-db.commit()
+conn.commit()
+conn.close()
 
-print(" Test users created successfully!")
-
-db.close()
+print("Audit Logs table updated successfully.")

@@ -56,16 +56,16 @@ const Products = () => {
   setLoading(true);
   try {
     const res = await getProducts({
-      search,
-      category_id:
-        categoryId === "" ? undefined : categoryId,
-      status: status || undefined,
-      brand: brand || undefined,
-      sort,
-      page,
-      page_size: pageSize,
-    });
-    setProducts(res.data);
+  search,
+  category_id: categoryId === "" ? undefined : categoryId,
+  status: status || undefined,
+  brand: brand || undefined,
+  sort,
+  page,
+  page_size: pageSize,
+});
+
+setProducts(res);
   } catch (err) {
     console.error(err);
     toast.error("Unable to load products");
@@ -93,7 +93,7 @@ const Products = () => {
     try {
       const res =
         await getDashboardSummary();
-      setSummary(res.data);
+      setSummary(res);
     } catch (err) {
       toast.error("Unable to load dashboard summary");
     }

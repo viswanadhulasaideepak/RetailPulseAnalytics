@@ -17,6 +17,10 @@ class Company(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     users = relationship("User",back_populates="company",cascade="all, delete-orphan")
     categories = relationship("Category",back_populates="company",cascade="all, delete-orphan")
-    products = relationship("Product",back_populates="company",cascade="all, delete-orphan",)
+    products = relationship("Product",back_populates="company",cascade="all, delete-orphan")
+    sales = relationship("Sale",back_populates="company",cascade="all, delete-orphan")
+    notifications = relationship("Notification",back_populates="company",cascade="all, delete-orphan")
+    
+    
 
 
