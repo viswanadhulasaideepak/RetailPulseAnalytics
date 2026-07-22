@@ -7,6 +7,8 @@ import Profile from "../pages/profile/Profile";
 import Products from "../pages/products/Products";
 import Categories from "../pages/categories/Categories";
 import Sales from "../pages/sales/Sales";
+import Inventory from "../pages/inventory/Inventory";
+import Notifications from "../pages/notifications/Notifications";
 import ProtectedRoute from "./ProtectedRoute";
 import RoleRoute from "./RoleRoute";
 
@@ -23,6 +25,8 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={<Dashboard />} />
 
       <Route path="/profile" element={<Profile />} />
+
+      <Route path="/notifications" element={<Notifications />}/>
 
      {/* Company Admin + Super Admin */}
 
@@ -46,11 +50,25 @@ const AppRoutes = () => {
           "Super Admin",
         ]}/>
         }>
+
+      {/* Company Admin + Analyst + Super Admin */}
+      <Route element={
+      <RoleRoute
+        roles={[
+          "Company Admin",
+          "Analyst",
+          "Super Admin",
+        ]}/>
+        }>
+      </Route>  
+
      <Route path="/products" element={<Products />}/>
 
      <Route path="/categories" element={<Categories />}/>
 
      <Route path="/sales" element={<Sales />}/>
+
+     <Route path="/inventory" element={<Inventory />} />
 
   </Route>
 

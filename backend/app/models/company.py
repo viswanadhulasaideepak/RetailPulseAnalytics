@@ -20,6 +20,7 @@ class Company(Base):
     products = relationship("Product",back_populates="company",cascade="all, delete-orphan")
     sales = relationship("Sale",back_populates="company",cascade="all, delete-orphan")
     notifications = relationship("Notification",back_populates="company",cascade="all, delete-orphan")
+    inventories = relationship("Inventory",back_populates="company",cascade="all, delete-orphan")
     
     
 

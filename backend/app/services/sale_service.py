@@ -5,6 +5,8 @@ from app.crud import sale as sale_crud
 from app.services.audit_service import create_audit_log
 from app.models.sale import Sale
 from app.models.product import Product
+from app.services.inventory_service import add_stock
+from app.services.inventory_service import remove_stock
 
 def create_sale(
     db: Session,
@@ -19,6 +21,17 @@ def create_sale(
             user_id=user_id,
             data=data,
         )
+        
+        for item in sale.items:
+            remove_stock(
+                db=db,
+                company_id=company_id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                reason="Sale",
+                remarks=f"Invoice {sale.invoice_number}",
+                user_id=user_id,
+                )
 
         create_audit_log(
             db=db,
@@ -123,17 +136,15 @@ def delete_sale(
     try:
         # Restore inventory
         for item in sale.items:
-            product = (
-                db.query(Product)
-                .filter(Product.id == item.product_id)
-                .first()
-            )
-
-            if product:
-                product.stock_quantity += item.quantity
-
-                if product.stock_quantity > 0:
-                    product.status = "Active"
+            add_stock(
+                db=db,
+                company_id=company_id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                reason="Sale Deleted",
+                remarks=f"Invoice {invoice_number}",
+                user_id=user_id,
+                )
 
         db.delete(sale)
         db.commit()

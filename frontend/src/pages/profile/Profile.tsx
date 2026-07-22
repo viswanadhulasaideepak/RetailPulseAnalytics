@@ -20,7 +20,7 @@ const Profile = () => {
         My Profile
       </Typography>
 
-      <Card sx={{ backgroundColor: "#1E293B", borderRadius: 4 }}>
+      <Card sx={{ backgroundColor: "#adc0e0", borderRadius: 4 }}>
         <CardContent>
           <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
             <Avatar sx={{ width: 90, height: 90, fontSize: 34 }}>

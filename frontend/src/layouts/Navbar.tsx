@@ -7,8 +7,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-
-import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
+import NotificationBell from "../components/common/NotificationBell";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 
 import { useState } from "react";
@@ -63,9 +62,7 @@ const Navbar = () => {
           RetailPulse Analytics
         </Typography>
 
-        <IconButton color="inherit">
-          <NotificationsNoneRoundedIcon />
-        </IconButton>
+        <NotificationBell />
 
         <IconButton
           color="inherit"

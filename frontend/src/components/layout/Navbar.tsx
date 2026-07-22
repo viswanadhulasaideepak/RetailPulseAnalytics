@@ -1,7 +1,8 @@
 import { AppBar, Box, Toolbar } from "@mui/material";
 
 import SearchBar from "./SearchBar";
-import NotificationMenu from "./NotificationMenu";
+import NotificationBell
+from "../common/NotificationBell";
 import UserMenu from "./UserMenu";
 
 const Navbar = () => {
@@ -22,7 +23,7 @@ const Navbar = () => {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <NotificationMenu />
+       <NotificationBell />
 
         <Box sx={{ ml: 2 }} />
 

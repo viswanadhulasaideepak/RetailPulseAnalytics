@@ -21,3 +21,4 @@ class User(Base):
     refresh_tokens = relationship("RefreshToken",back_populates="user",cascade="all, delete-orphan")
     audit_logs = relationship("AuditLog",back_populates="user")
     sales = relationship("Sale",back_populates="user")
+    inventory_movements = relationship("InventoryMovement",back_populates="user")

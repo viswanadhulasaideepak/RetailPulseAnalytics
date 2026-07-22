@@ -1,17 +1,36 @@
+from sqlalchemy import text
+
 from app.database.session import SessionLocal
-from app.models.user import User
-from app.core.security import verify_password
 
 db = SessionLocal()
 
-user = db.query(User).filter(
-    User.email == "viewer@nexusretail.com"
-).first()
+try:
+    db.execute(
+        text(
+            """
+            ALTER TABLE audit_logs
+            ADD COLUMN quantity_changed INTEGER
+            """
+        )
+    )
+    print("✓ Added quantity_changed")
+except Exception as e:
+    print("quantity_changed:", e)
 
-print("Email:", user.email)
-print("Verify viewer@123:", verify_password("viewer@123", user.password_hash))
-print("Verify Viewer@123:", verify_password("Viewer@123", user.password_hash))
-print("Verify viewer123:", verify_password("viewer123", user.password_hash))
-print("Verify password:", verify_password("password", user.password_hash))
+try:
+    db.execute(
+        text(
+            """
+            ALTER TABLE audit_logs
+            ADD COLUMN movement_type VARCHAR(100)
+            """
+        )
+    )
+    print("✓ Added movement_type")
+except Exception as e:
+    print("movement_type:", e)
 
+db.commit()
 db.close()
+
+print("Audit table updated successfully.")

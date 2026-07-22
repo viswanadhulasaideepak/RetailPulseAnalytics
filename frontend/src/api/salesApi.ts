@@ -17,27 +17,17 @@ export interface SaleFilterParams {
 }
 
 
-//---------------------------------------------
-
 export const getSales = async (): Promise<Sale[]> => {
-
     const res = await api.get("/sales/");
-
     return res.data;
 };
-
-//-----------------------------------------------
 
 export const getSale = async (
     id: number
 ): Promise<Sale> => {
-
     const res = await api.get(`/sales/${id}`);
-
     return res.data;
 };
-
-//-----------------------------------------------
 
 export const createSale = async (
     data: SaleCreate
@@ -47,11 +37,8 @@ export const createSale = async (
         "/sales/",
         data,
     );
-
     return res.data;
 };
-
-//-----------------------------------------------
 
 export const updateSale = async (
     id: number,
@@ -62,24 +49,15 @@ export const updateSale = async (
         `/sales/${id}/`,
         data,
     );
-
     return res.data;
 };
 
-//-----------------------------------------------
-
-export const deleteSale = async (
-    id: number,
-) => {
-
+export const deleteSale = async (id: number,) => {
     const res = await api.delete(
         `/sales/${id}/`,
     );
-
     return res.data;
 };
-
-//-----------------------------------------------
 
 export const getSummary =
     async (): Promise<SaleSummary> => {
@@ -91,8 +69,6 @@ export const getSummary =
         return res.data;
     };
 
-//-----------------------------------------------
-
 export const searchSales = async (
     keyword: string,
 ): Promise<Sale[]> => {
@@ -102,11 +78,8 @@ export const searchSales = async (
         keyword,
     },
 });
-
     return res.data;
 };
-
-//-----------------------------------------------
 
 export const filterSales = async (
     params: SaleFilterParams,
@@ -118,6 +91,5 @@ export const filterSales = async (
             params,
         },
     );
-
     return res.data;
 };

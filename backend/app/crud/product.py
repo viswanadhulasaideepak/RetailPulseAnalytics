@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 
 from app.models.category import Category
 from app.models.product import Product
+from app.crud.inventory import create_inventory
 
-
+#--------------------Get products-------------------
 def get_products(
     db: Session,
     company_id: int,
@@ -60,7 +61,7 @@ def get_products(
     .all()
 )
 
-
+#-------------------Get Product---------------------
 def get_product(
     db: Session,
     product_id: int,
@@ -75,7 +76,7 @@ def get_product(
         .first()
     )
 
-
+#-----------------------Create Product--------------------
 def create_product(
     db: Session,
     company_id: int,
@@ -126,23 +127,29 @@ def create_product(
             "Cost Price cannot exceed Unit Price"
         )
 
-    values = data.model_dump()
+    values = data.model_dump(exclude={"stock_quantity"})
 
     print("========== PRODUCT DATA ==========")
     print(values)
 
     product = Product(
-    company_id=company_id,
-    **values,
-)
+        company_id=company_id,
+        **values,
+        )
 
     db.add(product)
     db.commit()
     db.refresh(product)
+    
+    create_inventory(
+        db=db,
+        company_id=company_id,
+        product_id=product.id,
+    )
 
     return product
 
-
+#----------------------------Update Product------------------------
 def update_product(
     db: Session,
     product: Product,
@@ -183,7 +190,7 @@ def update_product(
 
     return product
 
-
+#----------------------Delete Product--------------------------
 def delete_product(
     db: Session,
     product: Product,

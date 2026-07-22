@@ -18,3 +18,5 @@ class AuditLog(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     company = relationship("Company",lazy="joined")
     user = relationship("User",back_populates="audit_logs",lazy="joined")
+    quantity_changed = Column(Integer, nullable=True)
+    movement_type = Column(String(100), nullable=True)

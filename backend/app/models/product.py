@@ -53,3 +53,4 @@ class Product(Base):
     category = relationship("Category",back_populates="products",lazy="joined")
     company = relationship("Company",back_populates="products")
     sale_items = relationship("SaleItem",back_populates="product",cascade="all, delete-orphan")
+    inventory = relationship("Inventory",back_populates="product",uselist=False)

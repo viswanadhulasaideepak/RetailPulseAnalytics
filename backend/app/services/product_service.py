@@ -7,6 +7,7 @@ from app.schemas.product import ProductUpdate
 from app.models.user import User
 from app.schemas.product import ProductCreate
 from app.crud import category as category_crud
+from app.crud import inventory as inventory_crud
 
 
 def get_products(
@@ -68,6 +69,13 @@ def create_product(
             company_id,
             data,
         )
+        
+        inventory_crud.create_inventory(
+            db=db,
+            company_id=company_id,
+            product_id=product.id,
+            reorder_level=10,
+            )
 
         if current_user:
             create_audit_log(

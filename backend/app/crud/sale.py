@@ -4,11 +4,8 @@ from sqlalchemy import func
 from sqlalchemy import or_
 from app.models.sale import Sale, SaleItem
 from app.models.product import Product
-from app.models.audit_log import AuditLog
-from app.models.notification import Notification
 from app.services import notification_service
 from app.services import audit_service
-
 
 #-----------------Invoice Generator------------------
 
@@ -24,9 +21,7 @@ def generate_invoice_number(
         .order_by(Sale.id.desc())
         .first()
     )
-
     next_number = 1
-
     if last_sale:
         try:
             next_number = int(last_sale.invoice_number.split("-")[-1]) + 1
@@ -35,7 +30,6 @@ def generate_invoice_number(
 
     while True:
         invoice = f"INV-{year}-{next_number:06d}"
-        
         exists = (
             db.query(Sale)
             .filter(
@@ -69,12 +63,10 @@ def create_sale(
         payment_method=data.payment_method,
         total_amount=0,
     )
-
     db.add(sale)
     db.flush()
 
     grand_total = 0
-
     for item in data.items:
 
         product = (
@@ -89,63 +81,13 @@ def create_sale(
         if not product:
             raise ValueError(f"Product {item.product_id} not found")
 
-        if product.stock_quantity < item.quantity:
-            raise ValueError(
-                f"Insufficient stock for {product.name}"
-            )
-
         unit_price = product.unit_price
-
         subtotal = unit_price * item.quantity
-
         if item.discount > subtotal:
             raise ValueError(
                 "Discount cannot exceed subtotal."
             )
-        
-        product.stock_quantity -= item.quantity
-        
-        audit_service.create_audit_log(
-            db=db,
-            company_id=company_id,
-            user_id=user_id,
-            action="Inventory Updated",
-            invoice_number=invoice,
-            product_name=product.name,
-            )
-        
         total = subtotal - item.discount + item.tax
-
-        # Low Stock Notification
-
-        if product.stock_quantity <= 10 and product.stock_quantity > 0:
-            notification_service.create_notification(
-                db=db,
-                company_id=company_id,
-                title="Low Stock Alert",
-                message=(
-                    f"{product.name} stock is running low. "
-                    f"Only {product.stock_quantity} left."
-                    ),
-                )
-        if product.stock_quantity == 0:
-            product.status = "Out of Stock"
-            
-            notification_service.create_notification(
-                db=db,
-                company_id=company_id,
-                title="Out Of Stock",
-                message=f"{product.name} is now Out of Stock.",
-                )
-
-            audit_service.create_audit_log(
-                db=db,
-                company_id=company_id,
-                user_id=user_id,
-                action="Product Marked Out Of Stock",
-                invoice_number=invoice,
-                product_name=product.name,
-                )
 
         sale_item = SaleItem(
             sale_id=sale.id,
@@ -159,7 +101,6 @@ def create_sale(
         )
 
         db.add(sale_item)
-
         grand_total += total
 
     sale.total_amount = grand_total
@@ -177,7 +118,6 @@ def create_sale(
         invoice_number=sale.invoice_number,
         product_name=item.product.name,
     )
-
     return sale
 
 #----------------------Update Sale--------------------
@@ -203,7 +143,6 @@ def update_sale(
         raise ValueError("Sale not found")
 
     try:
-
         # Restore previous stock
         for item in sale.items:
 
@@ -214,7 +153,6 @@ def update_sale(
             )
 
             if product:
-                product.stock_quantity += item.quantity
                 product.status = "Active"
 
         # Remove previous sale items
@@ -223,7 +161,6 @@ def update_sale(
         ).delete()
 
         grand_total = 0
-
         # Update basic information
         sale.customer_name = data.customer_name
         sale.sales_channel = data.sales_channel
@@ -231,7 +168,6 @@ def update_sale(
 
         # Add new items
         for item in data.items:
-
             product = (
                 db.query(Product)
                 .filter(
@@ -246,62 +182,12 @@ def update_sale(
                     f"Product {item.product_id} not found"
                 )
 
-            if product.stock_quantity < item.quantity:
-                raise ValueError(
-                    f"Insufficient stock for {product.name}"
-                )
-
             subtotal = product.unit_price * item.quantity
-
             if item.discount > subtotal:
                 raise ValueError(
                     "Discount cannot exceed subtotal"
                 )
-
             total = subtotal - item.discount + item.tax
-
-            product.stock_quantity -= item.quantity
-            
-            audit_service.create_audit_log(
-                db=db,
-                company_id=company_id,
-                user_id=user_id,
-                action="Inventory Updated",
-                invoice_number=sale.invoice_number,
-                product_name=product.name,
-                )
-            
-            # Low Stock Notification
-
-            if product.stock_quantity <= 10 and product.stock_quantity > 0:
-                notification_service.create_notification(
-                    db=db,
-                    company_id=company_id,
-                    title="Low Stock Alert",
-                    message=(
-                        f"{product.name} stock is running low. "
-                        f"Only {product.stock_quantity} left."
-                        ),
-                    )
-                
-            if product.stock_quantity == 0:
-                product.status = "Out of Stock"
-                
-                notification_service.create_notification(
-                    db=db,
-                    company_id=company_id,
-                    title="Out Of Stock",
-                    message=f"{product.name} is now Out of Stock.",
-                )
-                    
-                audit_service.create_audit_log(
-                    db=db,
-                    company_id=company_id,
-                    user_id=user_id,
-                    action="Product Marked Out Of Stock",
-                    invoice_number=sale.invoice_number,
-                    product_name=product.name,
-                )
 
             sale_item = SaleItem(
                 sale_id=sale.id,
@@ -315,7 +201,6 @@ def update_sale(
             )
 
             db.add(sale_item)
-
             grand_total += total
 
         sale.total_amount = grand_total
@@ -324,7 +209,6 @@ def update_sale(
         db.refresh(sale)
         
         for item in sale.items:
-            
             audit_service.create_audit_log(
                 db=db,
                 company_id=company_id,
@@ -412,22 +296,6 @@ def delete_sale(
                 .filter(Product.id == item.product_id)
                 .first()
             )
-
-            if product:
-
-                product.stock_quantity += item.quantity
-                
-                audit_service.create_audit_log(
-                        db=db,
-                        company_id=company_id,
-                        user_id=user_id,
-                        action="Inventory Restored",
-                        invoice_number=sale.invoice_number,
-                        product_name=item.product.name,
-                        ) 
-                
-                if product.stock_quantity > 0:
-                    product.status = "Active"
                     
         db.delete(sale)
         db.commit()

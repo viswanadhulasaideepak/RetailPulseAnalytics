@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { Typography } from "@mui/material";
 
-import AuthLayout from "../../layouts/AuthLayout";
-import LoginForm from "../../components/forms/LoginForm";
+import AuthLayout from "../layouts/AuthLayout";
+import LoginForm from "./LoginForm";
 
 const Login = () => {
   return (
